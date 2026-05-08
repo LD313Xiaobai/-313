@@ -1,21 +1,38 @@
-MIT License
+// ==UserScript==
+// @name         极速助手
+// @match        *://*comm800.com/*
+// @grant        none
+// ==/UserScript==
 
-Copyright (c) 2026 LD313
+(function() {
+    'use strict';
+    // 话术库
+    const db = [
+        {k: "PG", c: "PG电子爆率正常，建议尝试【麻将胡了】。"},
+        {k: "出款", c: "正在对接财务审核，请老板耐心等待。"},
+        {k: "维护", c: "线路临时维护，预计15-30分钟恢复。"},
+        {k: "PP", c: "PP平台波动较大，建议尝试其他游戏。"}
+    ];
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    // 苹果端提示框放在最顶部，防止被键盘挡住
+    const b = document.createElement('div');
+    b.style = "position:fixed;top:0;left:0;width:100%;z-index:999999;background:rgba(0,0,0,0.9);color:#fb0;padding:10px;display:none;font-size:14px;border-bottom:1px solid #fb0;";
+    b.innerHTML = `<div id="m"></div>`;
+    document.body.appendChild(b);
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+    setInterval(() => {
+        // 适配苹果端常见的输入框类型
+        const el = document.activeElement;
+        if (!el || (el.tagName !== 'TEXTAREA' && el.tagName !== 'INPUT')) return;
+        
+        const v = el.value.toUpperCase();
+        const h = db.filter(d => v.includes(d.k));
+        
+        if (h.length > 0 && v !== "") {
+            document.getElementById('m').innerHTML = h.map(x => x.c).join('<br>');
+            b.style.display = "block";
+        } else {
+            b.style.display = "none";
+        }
+    }, 500);
+})();
